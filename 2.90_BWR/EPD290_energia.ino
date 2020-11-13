@@ -1,5 +1,5 @@
 /* 
- *  This example code is for PDi 2.87" high resolution BWR EPD on EXT2 board which is verified by Arduino M0 Pro/TI Launchpaad EK-TM4C123GXL.
+ *  This example code is for PDi 2.9" high resolution BWR EPD on EXT2 board which is verified by Arduino M0 Pro/TI Launchpaad EK-TM4C123GXL.
  *  This Sketch uses 34124 bytes of program storage space.
  *  And it sould be able to be compile on Arduino/Energia IDE supported Board.
  *  Like Arduino Due or Arduino Uno(Need a level shifter 5V -> 3V for EXT2 board)  
@@ -7,6 +7,8 @@
  *  http://www.pervasivedisplays.com/
  *  https://www.pervasivedisplays.com/product/epd-extension-kit-gen-2-ext2/
  */
+
+
 #include <SPI.h>
 #if defined(ENERGIA)
 // Valid pins for LaunchPad on Energia
@@ -18,7 +20,6 @@
 #define BUSY_PIN 8  // EXT2 BOARD J5 pin 8
 #define PNLON_PIN 11 // EXT2 BOARD J5 pin 11
 #define BS_PIN 17        //EXT2 BOARD J5 pin 17
-//#define CSS_PIN 2     // EXT2 BOARD J5 pin 2 Slave CSB only required of 9.7"/12" with one 24pin FPC operation
 //#define CSS_PIN 13     // EXT2 BOARD J5 pin 13 Slave CSB only required of 9.7/12" with 34pin FFC bridge board(2FPC design) operation
 #else
 // Valid pins for Arduino board, like M0 Pro
@@ -29,8 +30,6 @@
 #define RESET_PIN 9  //EXT2 BOARD J5 pin 10
 #define BUSY_PIN 8   //EXT2 BOARD J5 pin 8
 #define PNLON_PIN 7  //EXT2 BOARD J5 pin 11
-#define BS_PIN 4        //EXT2 BOARD J5 pin 17
-//#define CSS_PIN 6    //EXT2 BOARD J5 pin 2 Slave CSB
 //#define CSS_PIN 5     // EXT2 BOARD J5 pin 13 Slave CSB only required of 9.7/12" with 34pin FFC bridge board(2FPC design) operation
 #endif
 //EXT2 BOARD J5 pin 20 connected to GND
@@ -50,8 +49,7 @@ void softwareSpi( uint8_t data ) {
     digitalWrite( SCL_PIN, LOW );
   }
 }
-
-// Software SPI protocl setup
+// Software SPI protocol setup
 void sendIndexData( uint8_t index, const uint8_t *data, uint32_t len ) {
   digitalWrite( DC_PIN, LOW );      //DC Low
   digitalWrite( CS_PIN, LOW );      //CS Low
@@ -64,7 +62,7 @@ void sendIndexData( uint8_t index, const uint8_t *data, uint32_t len ) {
 }
 */
 
-// SPI protocl setup
+// Hardware SPI protocol setup
 void sendIndexData( uint8_t index, const uint8_t *data, uint32_t len ) {
   SPI.begin (); 
   SPI.setDataMode(SPI_MODE3);
