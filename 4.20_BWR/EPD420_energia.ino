@@ -6,21 +6,37 @@
  */
 
 
-#define SCL_PIN 7      //EXT2 BOARD J5 pin 7
-#define SDA_PIN 15     //EXT2 BOARD J5 pin 15
-#define CS_PIN 19      //EXT2 BOARD J5 pin 19
-#define DC_PIN 9       //EXT2 BOARD J5 pin 9
-#define RESET_PIN 10   //EXT2 BOARD J5 pin 10
-#define BUSY_PIN 8     //EXT2 BOARD J5 pin 8
-#define PNLON_PIN 11   //EXT2 BOARD J5 pin 11
-#define CSS_PIN 6      //EXT2 BOARD J5 pin 2 Slave CSB is only required of 12" operation
-                       //EXT2 BOARD J5 pin 20 connected to GND
-                       //EXT2 BOARD J5 pin 17 connected to GND for 4 wire SPI
-                       //EXT2 BOARD J5 pin 1 connected to 3V3
+#include <SPI.h>
+#if defined(ENERGIA)
+// Valid pins for LaunchPad on Energia
+#define SCL_PIN 7  // EXT2 BOARD J5 pin 7
+#define SDA_PIN 15  // EXT2 BOARD J5 pin 15
+#define CS_PIN 19  // EXT2 BOARD J5 pin 19
+#define DC_PIN 9   // EXT2 BOARD J5 pin 9
+#define RESET_PIN 10 // EXT2 BOARD J5 pin 10
+#define BUSY_PIN 8  // EXT2 BOARD J5 pin 8
+#define PNLON_PIN 11 // EXT2 BOARD J5 pin 11
+#define BS_PIN 17        //EXT2 BOARD J5 pin 17
+//#define CSS_PIN 13     // EXT2 BOARD J5 pin 13 Slave CSB only required of 9.7/12" with 34pin FFC bridge board(2FPC design) operation
+#else
+// Valid pins for Arduino board, like M0 Pro
+#define SCL_PIN 13   //EXT2 BOARD J5 pin 7
+#define SDA_PIN 12   //EXT2 BOARD J5 pin 15
+#define CS_PIN 11    //EXT2 BOARD J5 pin 19 Master CSB
+#define DC_PIN 10    //EXT2 BOARD J5 pin 9
+#define RESET_PIN 9  //EXT2 BOARD J5 pin 10
+#define BUSY_PIN 8   //EXT2 BOARD J5 pin 8
+#define PNLON_PIN 7  //EXT2 BOARD J5 pin 11
+//#define CSS_PIN 5     // EXT2 BOARD J5 pin 13 Slave CSB only required of 9.7/12" with 34pin FFC bridge board(2FPC design) operation
+#endif
+//EXT2 BOARD J5 pin 20 connected to GND
+//EXT2 BOARD J5 pin 17 connected to GND for 4 wire SPI
+//EXT2 BOARD J5 pin 1 connected to 3V3
 
 extern const uint8_t blackBuffer [];
 extern const uint8_t redBuffer [];
 
+/*
 // Software SPI setup
 void softwareSpi( uint8_t data ) {
   for ( int i = 0; i < 8; i++ ) {
@@ -30,16 +46,36 @@ void softwareSpi( uint8_t data ) {
     digitalWrite( SCL_PIN, LOW );
   }
 }
-
-// Software SPI protocl setup
+// Software SPI protocol setup
 void sendIndexData( uint8_t index, const uint8_t *data, uint32_t len ) {
   digitalWrite( DC_PIN, LOW );      //DC Low
   digitalWrite( CS_PIN, LOW );      //CS Low
   softwareSpi( index );
   digitalWrite( CS_PIN, HIGH );     //CS High
   digitalWrite( DC_PIN, HIGH );     //DC High
-  digitalWrite( CS_PIN, LOW );      //CS Low
+  digitalWrite( CS_PIN, LOW );      //CS High
   for ( int i = 0; i < len; i++ ) softwareSpi( data[ i ] );
+  digitalWrite( CS_PIN, HIGH );     //CS High
+}
+*/
+
+// Hardware SPI protocol setup
+void sendIndexData( uint8_t index, const uint8_t *data, uint32_t len ) {
+  SPI.begin (); 
+  SPI.setDataMode(SPI_MODE3);
+  SPI.setClockDivider(SPI_CLOCK_DIV32);
+  SPI.setBitOrder(MSBFIRST);
+  digitalWrite( DC_PIN, LOW );      //DC Low
+  digitalWrite( CS_PIN, LOW );      //CS Low
+  delayMicroseconds(500);
+  SPI.transfer( index );
+  delayMicroseconds(500);
+  digitalWrite( CS_PIN, HIGH );     //CS High
+  digitalWrite( DC_PIN, HIGH );     //DC High
+  digitalWrite( CS_PIN, LOW );      //CS Low
+  delayMicroseconds(500);
+  for ( int i = 0; i < len; i++ ) SPI.transfer( data[ i ] );
+  delayMicroseconds(500);
   digitalWrite( CS_PIN, HIGH );     //CS High
 }
 
