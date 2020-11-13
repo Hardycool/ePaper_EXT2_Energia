@@ -49,7 +49,7 @@ void softwareSpi( uint8_t data ) {
 }
 
 
-// Software SPI protocl setup
+// Software SPI protocol setup
 void sendIndexData( uint8_t index, const uint8_t *data, uint32_t len ) {
   digitalWrite( DC_PIN, LOW );      //DC Low
   digitalWrite( CS_PIN, LOW );      //CS Low
@@ -62,7 +62,7 @@ void sendIndexData( uint8_t index, const uint8_t *data, uint32_t len ) {
 }
 */
 
-// SPI protocl setup
+// Hardware SPI protocol setup
 void sendIndexData( uint8_t index, const uint8_t *data, uint32_t len ) {
   SPI.begin (); 
   SPI.setDataMode(SPI_MODE3);
